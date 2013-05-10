@@ -22,6 +22,9 @@ lib_dir = kernel['machine'] =~ /x86_64/ ? 'lib64' : 'lib'
 
 default['php']['install_method'] = 'package'
 default['php']['directives'] = {}
+# Allow other php.ini files to be configurable besides the default php-cli
+# Options: apache2, cgi, cli, fpm
+conf_type = <%= node[:php5][:conf_type] %>
 
 case node["platform_family"]
 when "rhel", "fedora"
@@ -36,7 +39,8 @@ when "rhel", "fedora"
     default['php']['packages'] = ['php', 'php-devel', 'php-cli', 'php-pear']
   end
 when "debian"
-  default['php']['conf_dir']      = '/etc/php5/cli'
+  # Only tested on debian so far
+  default['php']['conf_dir']      = '/etc/php5/#{conf_type}'
   default['php']['ext_conf_dir']  = '/etc/php5/conf.d'
   default['php']['fpm_user']      = 'www-data'
   default['php']['fpm_group']     = 'www-data'
